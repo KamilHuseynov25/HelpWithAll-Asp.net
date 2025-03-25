@@ -1,0 +1,6 @@
+@HelpWithAllWApi_HostAddress = http://localhost:5195
+
+GET {{HelpWithAllWApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
