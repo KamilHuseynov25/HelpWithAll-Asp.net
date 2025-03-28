@@ -32,13 +32,14 @@ using Npgsql;
             return result > 0;
         }
 
-        public async Task<IEnumerable<Helper>> SelectAllHelpersAsync()
+        public async Task<List<Helper>> SelectAllHelpersAsync()
         {
             using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync();
             
             var query = "SELECT * FROM Helpers";
-            return await connection.QueryAsync<Helper>(query);
+            var helpers = await connection.QueryAsync<Helper>(query);
+            return helpers.ToList();
         }
 
         public async Task<Helper> SelectHelperByIdAsync(int id)

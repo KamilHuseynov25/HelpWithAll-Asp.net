@@ -8,6 +8,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IHelperRepository, HelperJsonRepository>();
+
 var app = builder.Build();
 
 

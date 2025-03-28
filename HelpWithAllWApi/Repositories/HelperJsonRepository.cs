@@ -2,74 +2,83 @@ namespace HelpWithAllWApi.Repositories;
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using HelpWithAllWApi.Models;
 using HelpWithAllWApi.Repositories.Base;
 
-
 public class HelperJsonRepository : IHelperRepository
 {
-    private string _filePath = "HelpWithAllWApi/helpers.json";
+    private string _filePath = "helpers.json";
 
-    public  async Task<bool> InsertHelperAsync(Helper helper)
+    public HelperJsonRepository()
     {
+        EnsureFileExists();
+    }
+
+    private void EnsureFileExists()
+    {
+        if (!File.Exists(_filePath))
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(_filePath));
+            File.WriteAllText(_filePath, "[]");
+        }
+    }
+
+    public async Task<bool> InsertHelperAsync(Helper helper)
+    {
+        EnsureFileExists();
         var helpers = await SelectAllHelpersAsync();
-        if (helpers.Any(h => h.Id == helper.Id) || helpers == null) return false;
-        var helpersList = helpers.ToList();
-        helpersList.Add(helper);
-        var json = JsonSerializer.Serialize(helpersList, new JsonSerializerOptions { WriteIndented = true });
+        if (helpers.Any(h => h.Id == helper.Id)) return false;
+        
+        helpers.Add(helper);
+        var json = JsonSerializer.Serialize(helpers, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(_filePath, json);
         return true;
     }
 
-    public  async Task<bool> DeleteHelperAsync(int id)
+    public async Task<bool> DeleteHelperAsync(int id)
     {
+        EnsureFileExists();
         var helpers = await SelectAllHelpersAsync();
         var helper = helpers.FirstOrDefault(h => h.Id == id);
         
-        if (helper == null)
-        {
-            return false;
-        }
+        if (helper == null) return false;
 
-        var helpersList = helpers.ToList();
-        helpersList.Remove(helper);
-
-        var json = JsonSerializer.Serialize(helpersList, new JsonSerializerOptions { WriteIndented = true });
+        helpers.Remove(helper);
+        var json = JsonSerializer.Serialize(helpers, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(_filePath, json);
         return true;
     }
 
-    public  async Task<IEnumerable<Helper>> SelectAllHelpersAsync()
-    {if (!File.Exists(_filePath)) return new List<Helper>();
-        
-
+    public async Task<List<Helper>> SelectAllHelpersAsync()
+    {
+        EnsureFileExists();
         var json = await File.ReadAllTextAsync(_filePath);
-        return JsonSerializer.Deserialize<List<Helper>>(json) ?? new List<Helper>();
-        
+        var helpers = JsonSerializer.Deserialize<List<Helper>>(json) ?? new List<Helper>();
+        return helpers;
+
     }
 
-    public  async Task<Helper> SelectHelperByIdAsync(int id)
+    public async Task<Helper> SelectHelperByIdAsync(int id)
     {
+        EnsureFileExists();
         var helpers = await SelectAllHelpersAsync();
-        var helpersList = helpers.ToList();
-        return helpersList.FirstOrDefault(h => h.Id == id);
+        return helpers.FirstOrDefault(h => h.Id == id);
     }
 
-    public  async Task<bool> UpdateHelperAsync(Helper updatedHelper)
+    public async Task<bool> UpdateHelperAsync(Helper updatedHelper)
     {
+        EnsureFileExists();
         var helpers = await SelectAllHelpersAsync();
-        var helpersList = helpers.ToList();
-        var index = helpersList.FindIndex(h => h.Id == updatedHelper.Id);
+      
+        var index = helpers.FindIndex(h => h.Id == updatedHelper.Id);
         
-        if (index == -1)
-        {
-            return false;
-        }
+        if (index == -1) return false;
 
-        helpersList[index] = updatedHelper;
-        var json = JsonSerializer.Serialize(helpersList, new JsonSerializerOptions { WriteIndented = true });
+        helpers[index] = updatedHelper;
+        var json = JsonSerializer.Serialize(helpers, new JsonSerializerOptions { WriteIndented = true });
         await File.WriteAllTextAsync(_filePath, json);
         return true;
     }
