@@ -1,0 +1,49 @@
+
+@model Helper
+
+
+<form method="post" asp-controller="Helper" asp-action="UpdateHelper" enctype="application/x-www-form-urlencoded">
+    <input type="hidden" asp-for="Id">
+
+    <div class="mb-1">
+        <label asp-for="Name" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Name">
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="Surname" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Surname">
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="Profession" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Profession">
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="PaymentPerHour" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="PaymentPerHour">
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="Experience" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Experience">
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="Age" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Age">
+    </div>
+
+    <div class="mb-1 form-check">
+        <input class="form-check-input" asp-for="Avalibility" type="checkbox">
+        <label class="form-check-label" asp-for="Avalibility">Are you available now?</label>
+    </div>
+
+    <div class="mb-1">
+        <label asp-for="Rating" class="form-label"></label>
+        <input type="text" class="form-control" asp-for="Rating">
+    </div>
+
+    <button class="btn btn-primary">Change</button>
+</form>

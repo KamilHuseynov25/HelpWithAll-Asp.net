@@ -1,0 +1,61 @@
+@model Customer
+@using HelpWithAllApp.Repositories.Base
+@inject ICustomerRepository customerRepository
+
+@{
+    var customers = await customerRepository.SelectAllCustomersAsync();
+}
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h1>Hello dear, Welcome to the Customer page! Here you can create an account and help yourself.</h1>
+    <a class="btn btn-primary" asp-controller="Customer" asp-action="CreateCustomer">
+        Create Customer Account
+    </a>
+
+    @if(customers == null || !customers.Any()) {
+        <h3>No customers found...</h3>
+    }
+    else {
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Surname</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var customer in customers) {
+                    <tr id="row-@customer.Id">
+                        <th>@customer.Id</th>
+                        <td>@customer.Name</td>
+                        <td>@customer.Surname</td>
+                        <td><button class="btn btn-danger" onclick="DeleteCustomerAsync(@customer.Id)">Delete</button></td>
+                        <td><a class="btn btn-info" asp-controller="Customer" asp-action="UpdateCustomer" asp-route-id="@customer.Id">Change Customer Info</a></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+<script>
+    async function DeleteCustomerAsync(customerId) {
+        try {
+            const response = await fetch(`http://localhost:5155/Customer/DeleteCustomer/${customerId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                document.getElementById(`row-${customerId}`).remove();
+            } else {
+                console.error("Failed to delete customer:", response);
+            }
+        } catch (error) {
+            console.error("Request failed", error);
+        }
+    }
+</script>
