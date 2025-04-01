@@ -1,4 +1,6 @@
+using System.Reflection;
 using System.Security.Cryptography;
+using FluentValidation;
 using HelpWithAllApp.Middlewares;
 using HelpWithAllApp.Options;
 using HelpWithAllApp.Repositories;
@@ -20,6 +22,10 @@ builder.Services.Configure<DatabaseOptions>(options => {
     var connectionString = builder.Configuration.GetConnectionString("HelperDatabase");
     options.ConnectionString = connectionString!;
 });
+builder.Services.AddValidatorsFromAssemblies(new Assembly[] {
+    Assembly.GetExecutingAssembly(),
+});
+
 
 var app = builder.Build();
 
