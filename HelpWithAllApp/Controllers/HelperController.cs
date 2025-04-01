@@ -1,19 +1,26 @@
 
+using System.Net;
 using HelpWithAllApp.Models;
+using HelpWithAllApp.Models.Response;
 using HelpWithAllApp.Repositories.Base;
+using HelpWithAllApp.Service.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace HelpWithAllApp.Controllers;
 [Route("[controller]/[action]")]
-
+[ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(InternalServerErrorResponse))]
+[ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(BadRequestResponse))]
+[ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(NotFoundErrorResponse))]
+[ProducesResponseType((int)HttpStatusCode.OK)]
 public class HelperController : Controller
 {
     private readonly IHelperRepository helperRepository;
-
-    public HelperController(IHelperRepository helperRepository)
+    private readonly IHttpLogger logger;
+    public HelperController(IHelperRepository helperRepository, IHttpLogger logger)
     {
         this.helperRepository = helperRepository;
+        this.logger = logger;
     }
     [HttpGet]
     public IActionResult Index()
@@ -31,8 +38,9 @@ public class HelperController : Controller
     public async Task<IActionResult> CreateHelper(Helper helper){
         
 
-        await helperRepository.InsertHelperAsync(helper);
-        return base.RedirectToAction("Index");
+        var checker = await helperRepository.InsertHelperAsync(helper);
+        if(checker)return base.RedirectToAction("Index");
+        return StatusCode(500, "An error occurred while updating the helper.");
     }
 
     [HttpGet]
@@ -56,7 +64,7 @@ public async Task<IActionResult> UpdateHelper(int id)
     public async Task<IActionResult> UpdateHelper(Helper newHelper){
         if (!ModelState.IsValid)
     {
-        return View(newHelper); // Return the form with validation messages
+        return View(newHelper);
     }
         var checker = await helperRepository.UpdateHelperAsync(newHelper);
         if(checker){

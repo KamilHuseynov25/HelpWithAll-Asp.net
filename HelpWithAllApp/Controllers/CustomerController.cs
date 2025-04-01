@@ -1,18 +1,29 @@
+using System.Net;
 using HelpWithAllApp.Models;
+using HelpWithAllApp.Models.Response;
 using HelpWithAllApp.Repositories.Base;
+using HelpWithAllApp.Service.Base;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
 namespace HelpWithAllApp.Controllers;
 
 [Route("[controller]/[action]")]
+[ProducesResponseType((int)HttpStatusCode.InternalServerError, Type = typeof(InternalServerErrorResponse))]
+[ProducesResponseType((int)HttpStatusCode.BadRequest, Type = typeof(BadRequestResponse))]
+[ProducesResponseType((int)HttpStatusCode.NotFound, Type = typeof(NotFoundErrorResponse))]
+[ProducesResponseType((int)HttpStatusCode.OK)]
 public class CustomerController : Controller
 {
     private readonly ICustomerRepository customerRepository;
+    private readonly IHttpLogger logger;
 
-    public CustomerController(ICustomerRepository customerRepository)
+
+    public CustomerController(ICustomerRepository customerRepository, IHttpLogger logger)
     {
         this.customerRepository = customerRepository;
+        this.logger = logger;
+
     }
 
     [HttpGet]
@@ -31,8 +42,11 @@ public class CustomerController : Controller
     [ActionName("CreateCustomer")]
     public async Task<IActionResult> CreateCustomer(Customer customer)
     {
-        await customerRepository.InsertCustomerAsync(customer);
-        return base.RedirectToAction("Index");
+        var checker = await customerRepository.InsertCustomerAsync(customer);
+        if(checker){return base.RedirectToAction("Index");}
+        else{
+            return StatusCode(500, "An error occurred while deleting the customer.");
+        }
     }
 
     [HttpGet]

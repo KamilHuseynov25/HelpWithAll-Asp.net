@@ -1,37 +1,52 @@
 @model Helper
+@{
+        IEnumerable<ValidationErrorModel>? validationErrors = null;
+        var validationErrorsObject = base.ViewData["validation_errors"];
 
+        if(validationErrorsObject is IEnumerable<ValidationErrorModel>) {
+                validationErrors = validationErrorsObject as IEnumerable<ValidationErrorModel>;
+        }
+}
 <form method="post" asp-controller="Helper" asp-action="CreateHelper">
 <div class="mb-3">
         <label asp-for="Name" class="form-label">Name</label>
         <input asp-for="Name" class="form-control">
+        <span class="text-danger" asp-validation-for="Name"></span>
 </div>
 <div class="mb-3">
         <label asp-for="Surname" class="form-label">Surname</label>
         <input asp-for="Surname" class="form-control">
+        <span class="text-danger" asp-validation-for="Surname"></span>
 </div>
 <div class="mb-3">
         <label asp-for="Profession" class="form-label">Profession</label>
         <input asp-for="Profession" class="form-control">
+        <span class="text-danger" asp-validation-for="Profession"></span>
 </div>
 <div class="mb-3">
         <label asp-for="PaymentPerHour" class="form-label">PaymentPerHour</label>
         <input asp-for="PaymentPerHour" class="form-control">
+        <span class="text-danger" asp-validation-for="PaymentPerHour"></span>
 </div>
 <div class="mb-3">
         <label asp-for="Age" class="form-label">Age</label>
         <input asp-for="Age" class="form-control">
+        <span class="text-danger" asp-validation-for="Age"></span>
 </div>
 <div class="mb-3">
         <label asp-for="Experience" class="form-label">Experience</label>
         <input asp-for="Experience" class="form-control">
+        <span class="text-danger" asp-validation-for="Experience"></span>
 </div>
 <div class="form-check form-switch">
         <label class="form-check-label"  asp-for="Avalibility">Are you avalible now</label>
         <input class="form-check-input"  asp-for="Avalibility" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+        <span class="text-danger" asp-validation-for="Avalibility"></span>
 </div>
 <div class="mb-3">
         <label asp-for="Rating" class="form-label">Rating</label>
         <input asp-for="Rating" class="form-control">
+        <span class="text-danger" asp-validation-for="Rating"></span>
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
 </form>

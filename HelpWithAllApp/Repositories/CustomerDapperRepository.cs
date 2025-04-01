@@ -21,8 +21,8 @@ public class CustomerDapperRepository : ICustomerRepository
         using var connection = new NpgsqlConnection(connectionString);
         await connection.OpenAsync();
         
-        var query = @"INSERT INTO Customers (Name, Surname, Email, PhoneNumber, IsHelper)
-                    VALUES (@Name, @Surname, @Email, @PhoneNumber, @IsHelper)";
+        var query = @"INSERT INTO Customers (Name, Surname, Email, PhoneNumber)
+                    VALUES (@Name, @Surname, @Email, @PhoneNumber)";
 
         var result = await connection.ExecuteAsync(query, customer);
         return result > 0;
