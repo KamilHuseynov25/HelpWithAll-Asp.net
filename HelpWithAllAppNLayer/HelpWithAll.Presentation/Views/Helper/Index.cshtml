@@ -1,0 +1,78 @@
+@model Helper
+@using HelpWithAll.Core.Repositories.Base
+@inject IHelperRepository helperRepository
+
+@{
+    var helpers = await helperRepository.SelectAllHelpersAsync();
+}
+<h1>@ViewData["Title"]</h1>
+
+
+<div>
+    <h1>Hello dear, Welcome to Helper page here you can become helper and help people as you can</h1>
+<a class="btn btn-primary" asp-controller="Helper" asp-action="CreateHelper">
+    Create Helper Account
+</a>
+
+@if (helpers == null || !helpers.Any()) {
+    <h3>No helpers available</h3>
+} else {
+    <div class="row">
+        @foreach (var helper1 in helpers) {
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">@helper1.Name @helper1.Surname</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@helper1.Profession</h6>
+                        <p class="card-text">
+                            <strong>ID:</strong> @helper1.Id <br>
+                            <strong>Payment Per Hour:</strong> @helper1.PaymentPerHour
+                        </p>
+                        <button class="btn btn-danger" onclick="DeleteHelperAsync(@helper1.Id)">Delete</button>
+                        <a class="btn btn-info" asp-controller="Helper" asp-action="UpdateHelper" asp-route-id="@helper1.Id">Change Info</a>
+                        <button class="btn btn-success order-btn" id="order-btn-@helper1.Id" onclick="toggleOrderButton(@helper1.Id)" @(helper1.Avalibility)>
+                            @(helper1.Avalibility ? "Order" : "Finish Job")
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<script>
+    function toggleOrderButton(helperId) {
+        var button = document.getElementById('order-btn-' + helperId);
+        if (button) {
+            if (button.innerText === "Order") {
+                button.innerText = "Finish Job";
+                button.disabled = false;
+            } else {
+                button.innerText = "Order";
+                button.disabled = false;
+            }
+        }
+    }
+</script>
+
+
+</div>
+
+<script>
+    async function DeleteHelperAsync(helperId) {
+    try {
+        const response = await fetch(`http://localhost:5155/Helper/DeleteHelper/${helperId}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            document.getElementById(`row-${helperId}`).remove();
+        } else {
+            console.error("Failed to delete helper:", response);
+        }
+    } catch (error) {
+        console.error("Request failed", error);
+    }
+}
+
+</script>
