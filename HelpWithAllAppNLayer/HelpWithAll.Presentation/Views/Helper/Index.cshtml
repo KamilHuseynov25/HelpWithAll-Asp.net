@@ -28,11 +28,14 @@
                             <strong>ID:</strong> @helper1.Id <br>
                             <strong>Payment Per Hour:</strong> @helper1.PaymentPerHour
                         </p>
-                        <button class="btn btn-danger" onclick="DeleteHelperAsync(@helper1.Id)">Delete</button>
+                        @if((bool)ViewData["isAdmin"]){
+                            <button class="btn btn-danger" onclick="DeleteHelperAsync(@helper1.Id)">Delete</button>
+                            }
                         <a class="btn btn-info" asp-controller="Helper" asp-action="UpdateHelper" asp-route-id="@helper1.Id">Change Info</a>
+                        @if(User.Identity.IsAuthenticated){
                         <button class="btn btn-success order-btn" id="order-btn-@helper1.Id" onclick="toggleOrderButton(@helper1.Id)" @(helper1.Avalibility)>
                             @(helper1.Avalibility ? "Order" : "Finish Job")
-                        </button>
+                        </button>}
                     </div>
                 </div>
             </div>

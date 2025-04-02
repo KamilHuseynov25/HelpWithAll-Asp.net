@@ -8,6 +8,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using System.Security.Claims;
 
 namespace HelpWithAll.PresentationControllers;
 
@@ -32,6 +33,9 @@ public class HelperController : Controller
     [HttpGet]
     public IActionResult Index()
     {
+        
+        var isAdmin = User.Claims.Where(claim => claim.Type == ClaimTypes.Role).Select(claim => claim.Value).ToList().Contains("Admin");
+        ViewData["isAdmin"] = isAdmin;
         return View();
     }
 
